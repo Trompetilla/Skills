@@ -44,6 +44,7 @@ function Stars() {
                 <button
                   className="button button-small"
                   onClick={() => void toggleStar({ skillId: skill._id })}
+                  aria-label={`Unstar ${skill.displayName}`}
                 >
                   Unstar
                 </button>
