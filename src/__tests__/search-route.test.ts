@@ -9,7 +9,12 @@ import { Route } from '../routes/search'
 
 describe('search route', () => {
   it('redirects to home with search mode enabled', () => {
-    const beforeLoad = Route.__config.beforeLoad as (args: {
+    const route = Route as unknown as {
+      __config: {
+        beforeLoad?: (args: { search: { q?: string; highlighted?: boolean } }) => void
+      }
+    }
+    const beforeLoad = route.__config.beforeLoad as (args: {
       search: { q?: string; highlighted?: boolean }
     }) => void
     let thrown: unknown
@@ -34,7 +39,12 @@ describe('search route', () => {
   })
 
   it('redirects to home with search flag even without query', () => {
-    const beforeLoad = Route.__config.beforeLoad as (args: {
+    const route = Route as unknown as {
+      __config: {
+        beforeLoad?: (args: { search: { q?: string; highlighted?: boolean } }) => void
+      }
+    }
+    const beforeLoad = route.__config.beforeLoad as (args: {
       search: { q?: string; highlighted?: boolean }
     }) => void
     let thrown: unknown
