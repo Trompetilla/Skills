@@ -38,6 +38,7 @@ export const searchSkills: ReturnType<typeof action> = action({
       return []
     }
     const limit = args.limit ?? 10
+    // 256 is the max limit for Convex vectorSearch API
     const maxCandidate = Math.min(Math.max(limit * 4, 64), 256)
     let candidateLimit = Math.min(Math.max(limit * 2, 32), 256)
     let hydrated: HydratedEntry[] = []
@@ -149,6 +150,7 @@ export const searchSouls: ReturnType<typeof action> = action({
       return []
     }
     const limit = args.limit ?? 10
+    // 256 is the max limit for Convex vectorSearch API
     const maxCandidate = Math.min(Math.max(limit * 4, 64), 256)
     let candidateLimit = Math.min(Math.max(limit * 2, 32), 256)
     let hydrated: HydratedSoulEntry[] = []
