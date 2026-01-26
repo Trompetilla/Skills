@@ -8,7 +8,7 @@ metadata: {
       "bins": ["qmd"]
     },
     "nix": {
-      "packages": ["github:tobi/qmd"]
+      "plugin": "github:tobi/qmd"
     },
     "notes": [
       "Use 'qmd query' for best results (combined search + reranking).",
