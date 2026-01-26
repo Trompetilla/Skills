@@ -1,5 +1,6 @@
 import { useAction } from 'convex/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { api } from '../../convex/_generated/api'
@@ -28,6 +29,11 @@ export function SkillFilesPanel({
   const [fileError, setFileError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const requestId = useRef(0)
+  const warnings = useMemo(() => (fileContent ? collectWarnings(fileContent) : []), [fileContent])
+  const highlightedContent = useMemo(
+    () => (fileContent ? highlightDangerousCommands(fileContent) : null),
+    [fileContent],
+  )
 
   useEffect(() => {
     if (versionId === null) {
@@ -126,13 +132,23 @@ export function SkillFilesPanel({
               </span>
             ) : null}
           </div>
+          {fileContent && warnings.length > 0 ? (
+            <div className="file-warning">
+              <strong>Potentially dangerous commands:</strong>{' '}
+              {warnings.map((warning) => (
+                <span key={warning.label} className="file-warning-item">
+                  {warning.label} × {warning.count}
+                </span>
+              ))}
+            </div>
+          ) : null}
           <div className="file-viewer-body">
             {isLoading ? (
               <div className="stat">Loading…</div>
             ) : fileError ? (
               <div className="stat">Failed to load file: {fileError}</div>
             ) : fileContent ? (
-              <pre className="file-viewer-code">{fileContent}</pre>
+              <pre className="file-viewer-code">{highlightedContent}</pre>
             ) : (
               <div className="stat">Select a file to preview.</div>
             )}
@@ -141,4 +157,43 @@ export function SkillFilesPanel({
       </div>
     </div>
   )
+}
+
+const DANGEROUS_PATTERNS: Array<{ label: string; regex: RegExp }> = [
+  { label: 'curl', regex: /\bcurl\b/gi },
+  { label: 'wget', regex: /\bwget\b/gi },
+  { label: 'bash', regex: /\bbash\b/gi },
+  { label: 'sh', regex: /\bsh\b/gi },
+  { label: 'eval', regex: /\beval\b/gi },
+]
+
+const HIGHLIGHT_PATTERN = /\b(?:curl|wget|bash|sh|eval)\b/gi
+
+function collectWarnings(content: string) {
+  return DANGEROUS_PATTERNS.flatMap((entry) => {
+    const matches = content.match(entry.regex)
+    if (!matches?.length) return []
+    return [{ label: entry.label, count: matches.length }]
+  })
+}
+
+function highlightDangerousCommands(content: string) {
+  const parts: ReactNode[] = []
+  let lastIndex = 0
+  for (const match of content.matchAll(HIGHLIGHT_PATTERN)) {
+    if (match.index === undefined) continue
+    if (match.index > lastIndex) {
+      parts.push(content.slice(lastIndex, match.index))
+    }
+    parts.push(
+      <mark key={`${match.index}-${match[0]}`} className="danger-mark">
+        {match[0]}
+      </mark>,
+    )
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < content.length) {
+    parts.push(content.slice(lastIndex))
+  }
+  return parts
 }

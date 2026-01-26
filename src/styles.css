@@ -1777,6 +1777,29 @@ code {
   padding: 16px;
 }
 
+.file-warning {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 91, 18, 0.35);
+  background: rgba(244, 187, 143, 0.25);
+  color: #8a3c06;
+  font-size: 0.85rem;
+}
+
+.file-warning-item {
+  font-weight: 600;
+}
+
+.danger-mark {
+  background: rgba(244, 187, 143, 0.6);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
 .file-viewer-header {
   display: flex;
   align-items: center;
