@@ -55,22 +55,25 @@ export async function apiRequest<T>(
       }
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(new Error('Timeout')), REQUEST_TIMEOUT_MS)
-      const response = await fetch(url, {
-        method: args.method,
-        headers,
-        body,
-        signal: controller.signal,
-      })
-      clearTimeout(timeout)
-      if (!response.ok) {
-        const text = await response.text().catch(() => '')
-        const message = text || `HTTP ${response.status}`
-        if (response.status === 429 || response.status >= 500) {
-          throw new Error(message)
+      try {
+        const response = await fetch(url, {
+          method: args.method,
+          headers,
+          body,
+          signal: controller.signal,
+        })
+        if (!response.ok) {
+          const text = await response.text().catch(() => '')
+          const message = text || `HTTP ${response.status}`
+          if (response.status === 429 || response.status >= 500) {
+            throw new Error(message)
+          }
+          throw new AbortError(message)
         }
-        throw new AbortError(message)
+        return (await response.json()) as unknown
+      } finally {
+        clearTimeout(timeout)
       }
-      return (await response.json()) as unknown
     },
     { retries: 2 },
   )
@@ -104,22 +107,25 @@ export async function apiRequestForm<T>(
       if (args.token) headers.Authorization = `Bearer ${args.token}`
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(new Error('Timeout')), REQUEST_TIMEOUT_MS)
-      const response = await fetch(url, {
-        method: args.method,
-        headers,
-        body: args.form,
-        signal: controller.signal,
-      })
-      clearTimeout(timeout)
-      if (!response.ok) {
-        const text = await response.text().catch(() => '')
-        const message = text || `HTTP ${response.status}`
-        if (response.status === 429 || response.status >= 500) {
-          throw new Error(message)
+      try {
+        const response = await fetch(url, {
+          method: args.method,
+          headers,
+          body: args.form,
+          signal: controller.signal,
+        })
+        if (!response.ok) {
+          const text = await response.text().catch(() => '')
+          const message = text || `HTTP ${response.status}`
+          if (response.status === 429 || response.status >= 500) {
+            throw new Error(message)
+          }
+          throw new AbortError(message)
         }
-        throw new AbortError(message)
+        return (await response.json()) as unknown
+      } finally {
+        clearTimeout(timeout)
       }
-      return (await response.json()) as unknown
     },
     { retries: 2 },
   )
@@ -139,16 +145,19 @@ export async function downloadZip(registry: string, args: { slug: string; versio
 
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(new Error('Timeout')), REQUEST_TIMEOUT_MS)
-      const response = await fetch(url.toString(), { method: 'GET', signal: controller.signal })
-      clearTimeout(timeout)
-      if (!response.ok) {
-        const message = (await response.text().catch(() => '')) || `HTTP ${response.status}`
-        if (response.status === 429 || response.status >= 500) {
-          throw new Error(message)
+      try {
+        const response = await fetch(url.toString(), { method: 'GET', signal: controller.signal })
+        if (!response.ok) {
+          const message = (await response.text().catch(() => '')) || `HTTP ${response.status}`
+          if (response.status === 429 || response.status >= 500) {
+            throw new Error(message)
+          }
+          throw new AbortError(message)
         }
-        throw new AbortError(message)
+        return new Uint8Array(await response.arrayBuffer())
+      } finally {
+        clearTimeout(timeout)
       }
-      return new Uint8Array(await response.arrayBuffer())
     },
     { retries: 2 },
   )
