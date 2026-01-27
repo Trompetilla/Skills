@@ -72,6 +72,7 @@ const skills = defineTable({
   .index('by_stats_installs_current', ['statsInstallsCurrent', 'updatedAt'])
   .index('by_stats_installs_all_time', ['statsInstallsAllTime', 'updatedAt'])
   .index('by_batch', ['batch'])
+  .index('by_active_updated', ['softDeletedAt', 'updatedAt'])
 
 const souls = defineTable({
   slug: v.string(),

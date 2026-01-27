@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as comments from "../comments.js";
 import type * as crons from "../crons.js";
 import type * as devSeed from "../devSeed.js";
+import type * as devSeedExtra from "../devSeedExtra.js";
 import type * as downloads from "../downloads.js";
 import type * as githubBackups from "../githubBackups.js";
 import type * as githubBackupsNode from "../githubBackupsNode.js";
@@ -69,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   crons: typeof crons;
   devSeed: typeof devSeed;
+  devSeedExtra: typeof devSeedExtra;
   downloads: typeof downloads;
   githubBackups: typeof githubBackups;
   githubBackupsNode: typeof githubBackupsNode;

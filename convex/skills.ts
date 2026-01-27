@@ -1,4 +1,6 @@
+import { paginationOptsValidator } from 'convex/server'
 import { ConvexError, v } from 'convex/values'
+import { paginator } from 'convex-helpers/server/pagination'
 import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
 import type { MutationCtx, QueryCtx } from './_generated/server'
@@ -13,6 +15,7 @@ import {
   queueHighlightedWebhook,
 } from './lib/skillPublish'
 import { getFrontmatterValue, hashSkillFiles } from './lib/skills'
+import schema from './schema'
 
 export { publishVersionForUser } from './lib/skillPublish'
 
@@ -186,6 +189,7 @@ export const listWithLatest = query({
   },
 })
 
+// TODO: Delete listPublicPage once all clients have migrated to listPublicPageV2
 export const listPublicPage = query({
   args: {
     cursor: v.optional(v.string()),
@@ -243,6 +247,37 @@ export const listPublicPage = query({
     const filtered = page.filter((skill) => !skill.softDeletedAt).slice(0, limit)
     const items = await buildPublicSkillEntries(ctx, filtered)
     return { items, nextCursor: null }
+  },
+})
+
+/**
+ * V2 of listPublicPage using convex-helpers paginator for better cache behavior.
+ *
+ * Key differences from V1:
+ * - Uses `paginator` from convex-helpers (doesn't track end-cursor internally, better caching)
+ * - Uses `by_active_updated` index to filter soft-deleted skills at query level
+ * - Returns standard pagination shape compatible with usePaginatedQuery
+ */
+export const listPublicPageV2 = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    // Use the new index to filter out soft-deleted skills at query time.
+    // softDeletedAt === undefined means active (non-deleted) skills only.
+    const result = await paginator(ctx.db, schema)
+      .query('skills')
+      .withIndex('by_active_updated', (q) => q.eq('softDeletedAt', undefined))
+      .order('desc')
+      .paginate(args.paginationOpts)
+
+    // Build the public skill entries (fetch latestVersion + ownerHandle)
+    const items = await buildPublicSkillEntries(ctx, result.page)
+
+    return {
+      ...result,
+      page: items,
+    }
   },
 })
 
