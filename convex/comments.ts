@@ -44,7 +44,6 @@ export const add = mutation({
 
     await ctx.db.patch(skill._id, {
       stats: { ...skill.stats, comments: skill.stats.comments + 1 },
-      updatedAt: Date.now(),
     })
   },
 })
@@ -71,7 +70,6 @@ export const remove = mutation({
     if (skill) {
       await ctx.db.patch(skill._id, {
         stats: { ...skill.stats, comments: Math.max(0, skill.stats.comments - 1) },
-        updatedAt: Date.now(),
       })
     }
 
