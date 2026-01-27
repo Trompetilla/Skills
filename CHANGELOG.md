@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-01-27
+
+### Fixed
+- CLI: add missing `undici` dependency (fixes ERR_MODULE_NOT_FOUND on Node.js, #23, #33).
+
 ## Unreleased
 
 ### Added
