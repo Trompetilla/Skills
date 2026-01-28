@@ -14,6 +14,8 @@ const RATE_LIMITS = {
   write: { ip: 30, key: 120 },
 } as const
 const MAX_RAW_FILE_BYTES = 200 * 1024
+const RAW_FILE_CONTENT_TYPE = 'text/plain; charset=utf-8'
+const RAW_FILE_CSP = "sandbox; default-src 'none'"
 
 type SearchSkillEntry = {
   score: number
@@ -375,15 +377,7 @@ async function skillsGetRouterV1Handler(ctx: ActionCtx, request: Request) {
     if (!blob) return text('File missing in storage', 410, rate.headers)
     const textContent = await blob.text()
 
-    const headers = mergeHeaders(rate.headers, {
-      'Content-Type': file.contentType
-        ? `${file.contentType}; charset=utf-8`
-        : 'text/plain; charset=utf-8',
-      'Cache-Control': 'private, max-age=60',
-      ETag: file.sha256,
-      'X-Content-SHA256': file.sha256,
-      'X-Content-Size': String(file.size),
-    })
+    const headers = buildRawFileHeaders(rate.headers, file)
     return new Response(textContent, { status: 200, headers })
   }
 
@@ -743,6 +737,18 @@ function mergeHeaders(base: HeadersInit, extra?: HeadersInit) {
   return { ...(base as Record<string, string>), ...(extra as Record<string, string>) }
 }
 
+function buildRawFileHeaders(base: HeadersInit, file: { sha256: string; size: number }) {
+  return mergeHeaders(base, {
+    'Content-Type': RAW_FILE_CONTENT_TYPE,
+    'Cache-Control': 'private, max-age=60',
+    'Content-Security-Policy': RAW_FILE_CSP,
+    'X-Content-Type-Options': 'nosniff',
+    ETag: file.sha256,
+    'X-Content-SHA256': file.sha256,
+    'X-Content-Size': String(file.size),
+  })
+}
+
 function getPathSegments(request: Request, prefix: string) {
   const pathname = new URL(request.url).pathname
   if (!pathname.startsWith(prefix)) return []
@@ -984,15 +990,7 @@ async function soulsGetRouterV1Handler(ctx: ActionCtx, request: Request) {
 
     void ctx.runMutation(api.soulDownloads.increment, { soulId: soulResult.soul._id })
 
-    const headers = mergeHeaders(rate.headers, {
-      'Content-Type': file.contentType
-        ? `${file.contentType}; charset=utf-8`
-        : 'text/plain; charset=utf-8',
-      'Cache-Control': 'private, max-age=60',
-      ETag: file.sha256,
-      'X-Content-SHA256': file.sha256,
-      'X-Content-Size': String(file.size),
-    })
+    const headers = buildRawFileHeaders(rate.headers, file)
     return new Response(textContent, { status: 200, headers })
   }
 

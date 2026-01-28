@@ -306,7 +306,7 @@ describe('httpApiV1 handlers', () => {
           size: 5,
           storageId: 'storage:1',
           sha256: 'abcd',
-          contentType: 'text/plain',
+          contentType: 'image/svg+xml',
         },
       ],
       softDeletedAt: undefined,
@@ -327,7 +327,7 @@ describe('httpApiV1 handlers', () => {
     })
     const runMutation = vi.fn().mockResolvedValue(okRate())
     const storage = {
-      get: vi.fn().mockResolvedValue(new Blob(['hello'], { type: 'text/plain' })),
+      get: vi.fn().mockResolvedValue(new Blob(['hello'], { type: 'image/svg+xml' })),
     }
     const response = await __handlers.skillsGetRouterV1Handler(
       makeCtx({ runQuery, runMutation, storage }),
@@ -335,6 +335,55 @@ describe('httpApiV1 handlers', () => {
     )
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('hello')
+    expect(response.headers.get('Content-Type')).toBe('text/plain; charset=utf-8')
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    expect(response.headers.get('Content-Security-Policy')).toBe("sandbox; default-src 'none'")
+    expect(response.headers.get('X-Content-SHA256')).toBe('abcd')
+  })
+
+  it('serves soul raw file content with safe headers', async () => {
+    const version = {
+      version: '1.0.0',
+      createdAt: 1,
+      changelog: 'c',
+      files: [
+        {
+          path: 'SOUL.md',
+          size: 5,
+          storageId: 'storage:1',
+          sha256: 'abcd',
+          contentType: 'image/svg+xml',
+        },
+      ],
+      softDeletedAt: undefined,
+    }
+    const runQuery = vi.fn().mockResolvedValue({
+      soul: {
+        _id: 'souls:1',
+        slug: 'demo',
+        displayName: 'Demo',
+        summary: 's',
+        tags: {},
+        stats: {},
+        createdAt: 1,
+        updatedAt: 2,
+      },
+      latestVersion: version,
+      owner: null,
+    })
+    const runMutation = vi.fn().mockResolvedValue(okRate())
+    const storage = {
+      get: vi.fn().mockResolvedValue(new Blob(['hello'], { type: 'image/svg+xml' })),
+    }
+    const response = await __handlers.soulsGetRouterV1Handler(
+      makeCtx({ runQuery, runMutation, storage }),
+      new Request('https://example.com/api/v1/souls/demo/file?path=SOUL.md'),
+    )
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('hello')
+    expect(response.headers.get('Content-Type')).toBe('text/plain; charset=utf-8')
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    expect(response.headers.get('Content-Security-Policy')).toBe("sandbox; default-src 'none'")
     expect(response.headers.get('X-Content-SHA256')).toBe('abcd')
   })
 
