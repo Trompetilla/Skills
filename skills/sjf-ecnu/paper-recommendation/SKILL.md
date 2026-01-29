@@ -1,5 +1,7 @@
 # Paper Recommendation Skill
 
+> 自动发现、深度阅读、生成简报 - 你的AI论文研究助手
+
 A Clawdbot skill for AI research paper discovery, review, and recommendation.
 
 ## Overview
