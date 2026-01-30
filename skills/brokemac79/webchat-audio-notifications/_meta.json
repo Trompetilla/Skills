@@ -3,9 +3,15 @@
   "slug": "webchat-audio-notifications",
   "displayName": "Webchat Audio Notifications",
   "latest": {
-    "version": "1.2.0",
-    "publishedAt": 1769641419795,
-    "commit": "https://github.com/clawdbot/skills/commit/687c803b246833409dfff8042c181e87a82050e0"
+    "version": "1.2.1",
+    "publishedAt": 1769772354542,
+    "commit": null
   },
-  "history": []
+  "history": [
+    {
+      "version": "1.2.0",
+      "publishedAt": 1769641419795,
+      "commit": "https://github.com/clawdbot/skills/commit/687c803b246833409dfff8042c181e87a82050e0"
+    }
+  ]
 }
