@@ -110,3 +110,7 @@ function toPublicExtension(
     updatedAt: resource.updatedAt,
   }
 }
+
+export const __test = {
+  toPublicExtension,
+}
