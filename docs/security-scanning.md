@@ -15,8 +15,8 @@ Agent skills run with access to your filesystem, credentials, and network. A mal
 ## Install
 
 ```bash
-# Install from GitHub (npm package coming soon)
-npm install -g github:rondorkerin/agentguard
+# Install from npm (published as "agentguard-ai")
+npm install -g agentguard-ai
 ```
 
 ## Scan before installing
@@ -57,7 +57,7 @@ Add AgentGuard as a gate in your publish pipeline:
 # GitHub Actions example
 - name: Security scan
   run: |
-    npm install -g github:rondorkerin/agentguard
+    npm install -g agentguard-ai
     agentguard scan ./skill/ --fail-on HIGH --json > security-report.json
 ```
 
@@ -70,5 +70,5 @@ As the skill ecosystem grows, automated security scanning becomes essential. We 
 ## Links
 
 - **Repository**: [github.com/rondorkerin/agentguard](https://github.com/rondorkerin/agentguard)
-- **Install**: `npm install -g github:rondorkerin/agentguard`
+- **Install**: `npm install -g agentguard-ai`
 - **Issues**: [github.com/rondorkerin/agentguard/issues](https://github.com/rondorkerin/agentguard/issues)
