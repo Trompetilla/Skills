@@ -1,13 +1,35 @@
 ---
 name: elevenlabs-voices
-version: 2.0.4
+version: 2.1.0
 description: High-quality voice synthesis with 18 personas, 32 languages, sound effects, batch processing, and voice design using ElevenLabs API.
 tags: [tts, voice, speech, elevenlabs, audio, sound-effects, voice-design, multilingual]
 ---
 
-# ElevenLabs Voice Personas v2.0
+# ElevenLabs Voice Personas v2.1
 
 Comprehensive voice synthesis toolkit using ElevenLabs API.
+
+## 🚀 First Run - Setup Wizard
+
+When you first use this skill (no `config.json` exists), run the interactive setup wizard:
+
+```bash
+python3 scripts/setup.py
+```
+
+The wizard will guide you through:
+1. **API Key** - Enter your ElevenLabs API key (required)
+2. **Default Voice** - Choose from popular voices (Rachel, Adam, Bella, etc.)
+3. **Language** - Set your preferred language (32 supported)
+4. **Audio Quality** - Standard or high quality output
+5. **Cost Tracking** - Enable usage and cost monitoring
+6. **Budget Limit** - Optional monthly spending cap
+
+**🔒 Privacy:** Your API key is stored locally in `config.json` only. It never leaves your machine and is automatically excluded from git via `.gitignore`.
+
+To reconfigure at any time, simply run the setup wizard again.
+
+---
 
 ## ✨ Features
 
@@ -19,7 +41,7 @@ Comprehensive voice synthesis toolkit using ElevenLabs API.
 - **Cost Tracking** - Monitor character usage and estimated costs
 - **Voice Design** - Create custom voices from descriptions
 - **Pronunciation Dictionary** - Custom word pronunciation rules
-- **Moltbot Integration** - Works with Moltbot's built-in TTS
+- **OpenClaw Integration** - Works with OpenClaw's built-in TTS
 
 ---
 
@@ -240,8 +262,8 @@ Edit `pronunciations.json`:
 {
   "rules": [
     {
-      "word": "Moltbot",
-      "replacement": "Clawd bot",
+      "word": "OpenClaw",
+      "replacement": "Open Claw",
       "comment": "Pronounce as two words"
     },
     {
@@ -256,7 +278,7 @@ Edit `pronunciations.json`:
 Usage:
 ```bash
 # Pronunciations are applied automatically
-python3 scripts/tts.py --text "The Moltbot API is great" --voice rachel
+python3 scripts/tts.py --text "The OpenClaw API is great" --voice rachel
 
 # Disable pronunciations
 python3 scripts/tts.py --text "The API is great" --voice rachel --no-pronunciations
@@ -289,11 +311,11 @@ python3 scripts/tts.py --stats
 
 ---
 
-## 🤖 Moltbot TTS Integration
+## 🤖 OpenClaw TTS Integration
 
-### Using with Moltbot's Built-in TTS
+### Using with OpenClaw's Built-in TTS
 
-Moltbot has built-in TTS support that can use ElevenLabs. Configure in `~/.moltbot/moltbot.json`:
+OpenClaw has built-in TTS support that can use ElevenLabs. Configure in `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -311,15 +333,15 @@ Moltbot has built-in TTS support that can use ElevenLabs. Configure in `~/.moltb
 
 ### Triggering TTS in Chat
 
-In Moltbot conversations:
+In OpenClaw conversations:
 - Use `/tts on` to enable automatic TTS
 - Use the `tts` tool directly for one-off speech
 - Request "read this aloud" or "speak this"
 
-### Using Skill Scripts from Moltbot
+### Using Skill Scripts from OpenClaw
 
 ```bash
-# Moltbot can run these scripts directly
+# OpenClaw can run these scripts directly
 exec python3 /path/to/skills/elevenlabs-voices/scripts/tts.py --text "Hello" --voice rachel
 ```
 
@@ -330,7 +352,7 @@ exec python3 /path/to/skills/elevenlabs-voices/scripts/tts.py --text "Hello" --v
 The scripts look for API key in this order:
 
 1. `ELEVEN_API_KEY` or `ELEVENLABS_API_KEY` environment variable
-2. Moltbot config (`~/.moltbot/moltbot.json` → tts.elevenlabs.apiKey)
+2. OpenClaw config (`~/.openclaw/openclaw.json` → tts.elevenlabs.apiKey)
 3. Skill-local `.env` file
 
 **Create .env file:**
@@ -369,10 +391,12 @@ Each voice has tuned settings for optimal output:
 elevenlabs-voices/
 ├── SKILL.md              # This documentation
 ├── README.md             # Quick start guide
+├── config.json           # Your local config (created by setup, in .gitignore)
 ├── voices.json           # Voice definitions & settings
 ├── pronunciations.json   # Custom pronunciation rules
 ├── examples.md           # Detailed usage examples
 ├── scripts/
+│   ├── setup.py          # Interactive setup wizard
 │   ├── tts.py            # Main TTS script
 │   ├── sfx.py            # Sound effects generator
 │   └── voice-design.py   # Voice design tool
@@ -394,6 +418,12 @@ elevenlabs-voices/
 
 ## 📋 Changelog
 
+### v2.1.0
+- Added interactive setup wizard (`scripts/setup.py`)
+- Onboarding guides through API key, voice, language, quality, and budget settings
+- Config stored locally in `config.json` (added to `.gitignore`)
+- Professional, privacy-focused setup experience
+
 ### v2.0.0
 - Added 32 language support with `--lang` parameter
 - Added streaming mode with `--stream` flag
@@ -402,5 +432,5 @@ elevenlabs-voices/
 - Added cost tracking with `--stats` flag
 - Added voice design tool (`voice-design.py`)
 - Added pronunciation dictionary support
-- Added Moltbot TTS integration documentation
+- Added OpenClaw TTS integration documentation
 - Improved error handling and progress output
