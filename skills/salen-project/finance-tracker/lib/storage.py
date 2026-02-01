@@ -192,6 +192,94 @@ class FinanceStorage:
         
         return "\n".join(lines)
     
+    def undo_last(self) -> Optional[Dict[str, Any]]:
+        """Remove the last transaction. Returns the removed transaction or None."""
+        data = self._load_json()
+        
+        if not data["transactions"]:
+            return None
+        
+        # Remove last transaction
+        removed = data["transactions"].pop()
+        self._save_json(data)
+        
+        # Also update markdown (remove last entry)
+        self._remove_from_markdown(removed)
+        
+        return removed
+    
+    def _remove_from_markdown(self, tx: Dict[str, Any]):
+        """Remove a transaction from the markdown file."""
+        if not self.md_file.exists():
+            return
+        
+        content = self.md_file.read_text()
+        
+        # Find and remove the line containing this transaction
+        date_str = datetime.fromisoformat(tx["date"]).strftime("%Y-%m-%d %H:%M")
+        lines = content.split("\n")
+        new_lines = [line for line in lines if date_str not in line or tx["description"] not in line]
+        
+        self.md_file.write_text("\n".join(new_lines))
+    
+    def edit_transaction(
+        self,
+        tx_id: int,
+        amount: Optional[int] = None,
+        description: Optional[str] = None,
+        category: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Edit an existing transaction. Returns updated transaction or None."""
+        data = self._load_json()
+        
+        for tx in data["transactions"]:
+            if tx["id"] == tx_id:
+                old_tx = tx.copy()
+                
+                if amount is not None:
+                    tx["amount"] = amount
+                if description is not None:
+                    tx["description"] = description
+                    # Re-detect category if description changed and no category specified
+                    if category is None:
+                        from categories import detect_category
+                        tx["category"] = detect_category(description)
+                if category is not None:
+                    tx["category"] = category
+                
+                tx["updated_at"] = datetime.now().isoformat()
+                
+                self._save_json(data)
+                
+                # Update markdown
+                self._remove_from_markdown(old_tx)
+                self._append_markdown(tx)
+                
+                return tx
+        
+        return None
+    
+    def delete_transaction(self, tx_id: int) -> bool:
+        """Delete a specific transaction by ID."""
+        data = self._load_json()
+        original_len = len(data["transactions"])
+        
+        removed = None
+        new_transactions = []
+        for tx in data["transactions"]:
+            if tx["id"] == tx_id:
+                removed = tx
+            else:
+                new_transactions.append(tx)
+        
+        if removed:
+            data["transactions"] = new_transactions
+            self._save_json(data)
+            self._remove_from_markdown(removed)
+            return True
+        
+        return False
+    
     def get_stats(self, days: Optional[int] = None) -> Dict[str, Any]:
         """Get spending statistics."""
         transactions = self.get_transactions(days=days)

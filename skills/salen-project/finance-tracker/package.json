@@ -30,7 +30,7 @@
     }
   },
   "bin": {
-    "finance": "./bin/finance.py"
+    "finance": "./bin/finance"
   },
   "files": [
     "bin/",
