@@ -1,0 +1,11 @@
+{
+  "owner": "vibrant",
+  "slug": "agentns",
+  "displayName": "Domain Name Registration For Agents",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1769984765532,
+    "commit": null
+  },
+  "history": []
+}
