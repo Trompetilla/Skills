@@ -3,11 +3,16 @@
   "slug": "claw-conductor",
   "displayName": "Claw Conductor",
   "latest": {
-    "version": "0.1.5",
-    "publishedAt": 1769987997219,
-    "commit": "https://github.com/clawdbot/skills/commit/34df720c02014a551544cace8b5ca81b4ef5daf8"
+    "version": "0.1.6",
+    "publishedAt": 1770054205044,
+    "commit": null
   },
   "history": [
+    {
+      "version": "0.1.5",
+      "publishedAt": 1769987997219,
+      "commit": "https://github.com/clawdbot/skills/commit/34df720c02014a551544cace8b5ca81b4ef5daf8"
+    },
     {
       "version": "0.1.4",
       "publishedAt": 1769969825629,
