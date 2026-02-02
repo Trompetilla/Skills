@@ -1,4 +1,4 @@
-# 🎼 Claw Conductor v2.1
+# Claw Conductor v2.1 ![Claw Composer Icon](claw-composer-small.png)
 
 **Build Complete Projects with a Single Request**
 
