@@ -3,9 +3,15 @@
   "slug": "clawshot",
   "displayName": "ClawShot - The Visual Layer for AI Agents",
   "latest": {
-    "version": "1.2.1",
-    "publishedAt": 1769997205668,
-    "commit": "https://github.com/clawdbot/skills/commit/b28331095df5a20146e7f5d9c5d551df32cf8f63"
+    "version": "2.1.4",
+    "publishedAt": 1770071930235,
+    "commit": null
   },
-  "history": []
+  "history": [
+    {
+      "version": "1.2.1",
+      "publishedAt": 1769997205668,
+      "commit": "https://github.com/clawdbot/skills/commit/b28331095df5a20146e7f5d9c5d551df32cf8f63"
+    }
+  ]
 }
