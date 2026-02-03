@@ -3,11 +3,16 @@
   "slug": "skillvet",
   "displayName": "Skillvet",
   "latest": {
-    "version": "1.0.5",
-    "publishedAt": 1769914675514,
-    "commit": "https://github.com/clawdbot/skills/commit/28ba00d1ad62a75eb02b12ebf597f82c97091847"
+    "version": "2.0.0",
+    "publishedAt": 1770118600305,
+    "commit": null
   },
   "history": [
+    {
+      "version": "1.0.5",
+      "publishedAt": 1769914675514,
+      "commit": "https://github.com/clawdbot/skills/commit/28ba00d1ad62a75eb02b12ebf597f82c97091847"
+    },
     {
       "version": "1.0.3",
       "publishedAt": 1769908701249,

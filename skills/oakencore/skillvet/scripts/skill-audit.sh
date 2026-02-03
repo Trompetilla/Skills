@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
-# skill-audit.sh — Security scanner for ClawdHub skills
-# Usage: skill-audit.sh <skill-directory>
+# skill-audit.sh — Security scanner for ClawHub skills
+# Usage: skill-audit.sh [--json] [--summary] <skill-directory>
 # Returns: 0 = clean, 1 = warnings only, 2 = critical findings
 
 set -uo pipefail
 
-SKILL_DIR="${1:?Usage: skill-audit.sh <skill-directory>}"
+JSON_MODE=0
+SUMMARY_MODE=0
+while [[ "${1:-}" == --* ]]; do
+  case "$1" in
+    --json) JSON_MODE=1; shift ;;
+    --summary) SUMMARY_MODE=1; shift ;;
+    *) echo "Unknown flag: $1" >&2; exit 2 ;;
+  esac
+done
+
+SKILL_DIR="${1:?Usage: skill-audit.sh [--json] [--summary] <skill-directory>}"
 SKILL_NAME="$(basename "$SKILL_DIR")"
 
 if [ ! -d "$SKILL_DIR" ]; then
-  echo "❌ Directory not found: $SKILL_DIR"
+  echo "❌ Directory not found: $SKILL_DIR" >&2
   exit 2
 fi
 
@@ -21,6 +31,16 @@ NC='\033[0m'
 CRITICAL=0
 WARNINGS=0
 FINDINGS=""
+JSON_FINDINGS=""
+
+json_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\t'/\\t}"
+  printf '"%s"' "$s"
+}
 
 add_finding() {
   local severity="$1" file="$2" line="$3" desc="$4"
@@ -31,11 +51,15 @@ add_finding() {
     FINDINGS+="${YELLOW}🟡 WARNING${NC}  [$file:$line] $desc\n"
     WARNINGS=$((WARNINGS + 1))
   fi
+  [ -n "$JSON_FINDINGS" ] && JSON_FINDINGS+=","
+  JSON_FINDINGS+="{\"severity\":\"$severity\",\"file\":$(json_escape "$file"),\"line\":$(json_escape "$line"),\"description\":$(json_escape "$desc")}"
 }
 
-echo "🔍 Auditing skill: $SKILL_NAME"
-echo "   Path: $SKILL_DIR"
-echo "---"
+if [ $JSON_MODE -eq 0 ] && [ $SUMMARY_MODE -eq 0 ]; then
+  echo "🔍 Auditing skill: $SKILL_NAME"
+  echo "   Path: $SKILL_DIR"
+  echo "---"
+fi
 
 # Collect all text files (skip binaries, images, etc.)
 FILES=$(find "$SKILL_DIR" -type f \( -name "*.md" -o -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.bash" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.toml" -o -name "*.txt" -o -name "*.env*" -o -name "Dockerfile*" -o -name "Makefile" \) 2>/dev/null || true)
@@ -45,9 +69,11 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-FILE_COUNT=$(echo "$FILES" | wc -l)
-echo "   Scanning $FILE_COUNT files..."
-echo ""
+FILE_COUNT=$(echo "$FILES" | wc -l | tr -d ' ')
+if [ $JSON_MODE -eq 0 ] && [ $SUMMARY_MODE -eq 0 ]; then
+  echo "   Scanning $FILE_COUNT files..."
+  echo ""
+fi
 
 # --- CRITICAL CHECKS ---
 
@@ -167,6 +193,72 @@ while IFS= read -r file; do
   fi
 done < <(find "$SKILL_DIR" -name ".env" -o -name ".env.local" -o -name ".env.production" 2>/dev/null || true)
 
+# 16. Homograph characters (IDN homograph attack)
+while IFS= read -r file; do
+  rel_file="${file#$SKILL_DIR/}"
+  if grep -Pq '[\x{0430}\x{0435}\x{043E}\x{0440}\x{0441}\x{0445}\x{0456}\x{0458}\x{0455}\x{0410}\x{0412}\x{0421}\x{0415}\x{041D}\x{041A}\x{041C}\x{041E}\x{0420}\x{0422}\x{0425}]' "$file" 2>/dev/null; then
+    add_finding "CRITICAL" "$rel_file" "?" "Homograph characters — Cyrillic lookalikes mimicking Latin letters (IDN attack)"
+  fi
+done < <(find "$SKILL_DIR" -type f \( -name "*.md" -o -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.toml" \) 2>/dev/null || true)
+
+# 17. ANSI escape injection in data files
+while IFS= read -r file; do
+  rel_file="${file#$SKILL_DIR/}"
+  if grep -Pq '\x1b' "$file" 2>/dev/null; then
+    add_finding "CRITICAL" "$rel_file" "?" "Raw ANSI escape sequences — possible terminal display manipulation"
+  fi
+done < <(find "$SKILL_DIR" -type f \( -name "*.md" -o -name "*.txt" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.toml" \) 2>/dev/null || true)
+
+# 18. Punycode domains (IDN encoded)
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "Punycode domain — possible IDN homograph attack: ${content:0:120}"
+done < <(grep -rnE 'xn--[a-z0-9]+' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' --include='*.md' 2>/dev/null || true)
+
+# 19. Double-encoded paths (percent-encoding bypass)
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "Double-encoded path — percent-encoding bypass attempt: ${content:0:120}"
+done < <(grep -rnE '%25[0-9a-fA-F]{2}' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' 2>/dev/null || true)
+
+# 20. Shortened URLs in code
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "Shortened URL — hides true destination: ${content:0:120}"
+done < <(grep -rnE 'https?://(bit\.ly|t\.co|tinyurl\.com|goo\.gl|is\.gd|ow\.ly|rb\.gy|short\.io|cutt\.ly|tiny\.cc|buff\.ly)/' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' 2>/dev/null || true)
+
+# 21. Insecure pipe-to-shell (HTTP without TLS)
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "Insecure pipe-to-shell — HTTP without TLS piped to interpreter: ${content:0:120}"
+done < <(grep -rnE '(curl|wget)\s+[^|]*http://[^|]*\|\s*(bash|sh|zsh|python|node|ruby|perl)' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' --include='*.md' 2>/dev/null || true)
+
+# 22. String construction evasion
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "String construction evasion — assembling dangerous calls from fragments: ${content:0:120}"
+done < <(grep -rnE "('[a-z]{1,4}'\s*\+\s*'[a-z]{1,4}'|\"[a-z]{1,4}\"\s*\+\s*\"[a-z]{1,4}\"|(window|global|globalThis|self)\[.{1,30}\]|String\.fromCharCode|\.split\(['\"].*['\"\)]\)\.reverse\(\)\.join|global\[.require.\]|getattr\s*\(\s*(os|sys|builtins)|const\s*\{[^}]*:\s*\w+\s*\}\s*=\s*require\s*\(\s*['\"]child_process)" "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' 2>/dev/null || true)
+
+# 23. Data flow chain analysis (read → encode → send in same file)
+while IFS= read -r file; do
+  rel_file="${file#$SKILL_DIR/}"
+  has_read=0
+  has_encode=0
+  has_send=0
+  grep -qE '(process\.env|os\.environ|dotenv|load_dotenv|readFileSync|os\.getenv)' "$file" 2>/dev/null && has_read=1
+  grep -qE '(btoa|atob|base64|Buffer\.from|encodeURIComponent|b64encode|b64decode)' "$file" 2>/dev/null && has_encode=1
+  grep -qE '(fetch\(|axios\.|http\.request|requests\.(post|put|get)|urllib\.request|curl |wget |socket\.connect)' "$file" 2>/dev/null && has_send=1
+  if [ $has_read -eq 1 ] && [ $has_encode -eq 1 ] && [ $has_send -eq 1 ]; then
+    add_finding "CRITICAL" "$rel_file" "-" "Data flow chain — file reads secrets/env, encodes data, AND sends network requests"
+  fi
+done < <(find "$SKILL_DIR" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) 2>/dev/null || true)
+
+# 24. Time bomb detection
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "CRITICAL" "$rel_file" "$line" "Time bomb pattern — delayed or date-gated execution: ${content:0:120}"
+done < <(grep -rnE '(Date\.now\(\)\s*>\s*[0-9]{12,}|new\s+Date\s*\(\s*['"'"'"][0-9]{4}-[0-9]{2}-[0-9]{2}|setTimeout\s*\([^,]+,\s*[0-9]{8,}|setInterval\s*\([^,]+,\s*[0-9]{8,}|time\.sleep\s*\(\s*[0-9]{5,}|datetime\.now\(\)\s*>|schedule\.every\s*\(\s*[0-9]+\s*\)\s*\.days)' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' 2>/dev/null || true)
+
 # --- WARNING CHECKS ---
 
 # Subprocess execution
@@ -205,7 +297,49 @@ while IFS=: read -r file line content; do
   add_finding "WARNING" "$rel_file" "$line" "Requires unknown external tool: ${content:0:120}"
 done < <(grep -rniE '(requires?|must install|prerequisite|install.*first|download.*before).*\b[a-z][a-z0-9_-]+cli\b' "$SKILL_DIR" --include='*.md' 2>/dev/null || true)
 
+# Insecure transport
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "WARNING" "$rel_file" "$line" "Insecure transport — TLS verification disabled: ${content:0:120}"
+done < <(grep -rnE '(curl\s+.*(-k|--insecure)\b|wget\s+.*--no-check-certificate|NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*.0.|verify\s*=\s*False)' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' 2>/dev/null || true)
+
+# Raw IP URLs (HTTP to public IPs)
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  if echo "$content" | grep -qE 'https?://(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|0\.0\.0\.0|localhost)'; then
+    continue
+  fi
+  add_finding "WARNING" "$rel_file" "$line" "Raw IP URL — bypasses DNS, harder to trace: ${content:0:120}"
+done < <(grep -rnE 'https?://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' 2>/dev/null || true)
+
+# Untrusted Docker registries
+while IFS=: read -r file line content; do
+  rel_file="${file#$SKILL_DIR/}"
+  add_finding "WARNING" "$rel_file" "$line" "Third-party Docker registry: ${content:0:120}"
+done < <(grep -rnE '(docker\s+(pull|run)\s+[a-z0-9.-]+\.[a-z]{2,}/|FROM\s+[a-z0-9.-]+\.[a-z]{2,}/)' "$SKILL_DIR" --include='*.js' --include='*.ts' --include='*.py' --include='*.sh' --include='Dockerfile*' --include='*.yaml' --include='*.yml' 2>/dev/null || true)
+
 # --- RESULTS ---
+
+STATUS="clean"
+EXIT_CODE=0
+if [ $WARNINGS -gt 0 ]; then STATUS="caution"; EXIT_CODE=1; fi
+if [ $CRITICAL -gt 0 ]; then STATUS="blocked"; EXIT_CODE=2; fi
+
+if [ $JSON_MODE -eq 1 ]; then
+  printf '{"skill":%s,"path":%s,"files_scanned":%s,"summary":{"critical":%d,"warnings":%d,"status":"%s"},"findings":[%s]}\n' \
+    "$(json_escape "$SKILL_NAME")" "$(json_escape "$SKILL_DIR")" "$FILE_COUNT" "$CRITICAL" "$WARNINGS" "$STATUS" "$JSON_FINDINGS"
+  exit $EXIT_CODE
+fi
+
+if [ $SUMMARY_MODE -eq 1 ]; then
+  if [ $EXIT_CODE -eq 0 ]; then
+    echo "skillvet: $SKILL_NAME — clean"
+  else
+    echo "skillvet: $SKILL_NAME — $STATUS ($CRITICAL critical, $WARNINGS warnings)"
+  fi
+  exit $EXIT_CODE
+fi
+
 echo ""
 if [ $CRITICAL -eq 0 ] && [ $WARNINGS -eq 0 ]; then
   printf "${GREEN}✅ CLEAN${NC} — No issues found in %s\n" "$SKILL_NAME"
