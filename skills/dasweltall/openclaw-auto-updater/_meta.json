@@ -1,0 +1,11 @@
+{
+  "owner": "dasweltall",
+  "slug": "openclaw-auto-updater",
+  "displayName": "OpenClaw Auto‑Updater (Safe + Scheduled + Summary)",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1770138450070,
+    "commit": null
+  },
+  "history": []
+}
