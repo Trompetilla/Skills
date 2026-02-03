@@ -1,0 +1,11 @@
+{
+  "owner": "alphafactor",
+  "slug": "x-publisher",
+  "displayName": "X Publisher",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1770105795729,
+    "commit": null
+  },
+  "history": []
+}
