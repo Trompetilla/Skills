@@ -11,17 +11,17 @@ Generate expressive voice messages using ElevenLabs v3 with audio tags.
 
 **English:**
 ```
-[excited] This is absolutely amazing! I can't believe how natural this sounds.
+[excited] This is absolutely amazing! [thoughtful] I never thought AI voices could sound so natural. [happy] The future is here!
 ```
 
 **Hebrew:**
 ```
-[excited] זה ממש מדהים מה שעשינו היום! אני כל כך שמח!
+[excited] זה ממש מדהים מה שעשינו היום! [soft] אני כל כך גאה בנו. [happy] בואו נחגוג!
 ```
 
 **Spanish:**
 ```
-[excited] ¡Esto es absolutamente increíble! No puedo creer lo natural que suena.
+[excited] ¡Esto es absolutamente increíble! [thoughtful] Nunca pensé que las voces de IA pudieran sonar tan naturales. [happy] ¡El futuro está aquí!
 ```
 
 ## Configuration (OpenClaw)
