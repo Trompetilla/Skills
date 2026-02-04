@@ -1,6 +1,6 @@
 ---
 name: elevenlabs-tts
-description: ElevenLabs voice synthesis with audio tags for expressive TTS (Text-to-Speech). Use when creating voice messages, podcasts, audiobooks, or any spoken content. Handles WhatsApp voice compatibility, long-form audio concatenation, and emotional expression via audio tags.
+description: ElevenLabs TTS (Text-to-Speech) with audio tags for expressive voice synthesis. Perfect for voice messages, podcasts, audiobooks, and spoken content. Supports WhatsApp voice compatibility, long-form audio concatenation, and emotional expression via audio tags.
 ---
 
 # ElevenLabs TTS (Text-to-Speech)
@@ -9,19 +9,29 @@ Generate expressive voice messages using ElevenLabs v3 with audio tags.
 
 ## Quick Start Examples
 
-**English:**
+**Storytelling (emotional journey):**
 ```
-[excited] This is absolutely amazing! [thoughtful] I never thought AI voices could sound so natural. [happy] The future is here!
-```
-
-**Hebrew:**
-```
-[excited] זה ממש מדהים מה שעשינו היום! [soft] אני כל כך גאה בנו. [happy] בואו נחגוג!
+[soft] It started like any other day... [pause] But something felt different. [nervous] My hands were shaking as I opened the envelope. [gasps] I got in! [excited] I actually got in! [laughs] [happy] This changes everything!
 ```
 
-**Spanish:**
+**Horror/Suspense (building dread):**
 ```
-[excited] ¡Esto es absolutamente increíble! [thoughtful] Nunca pensé que las voces de IA pudieran sonar tan naturales. [happy] ¡El futuro está aquí!
+[whispers] The house has been empty for years... [pause] At least, that's what they told me. [nervous] But I keep hearing footsteps. [scared] They're getting closer. [gasps] [panicking] The door— it's opening by itself!
+```
+
+**Conversation with reactions:**
+```
+[curious] So what happened at the meeting? [pause] [surprised] Wait, they fired him?! [gasps] [sad] That's terrible... [sighs] He had a family. [thoughtful] I wonder what he'll do now.
+```
+
+**Hebrew (romantic moment):**
+```
+[soft] היא עמדה שם, מול השקיעה... [pause] הלב שלי פעם כל כך חזק. [nervous] לא ידעתי מה להגיד. [hesitates] אני... [breathes] [tender] את יודעת שאני אוהב אותך, נכון?
+```
+
+**Spanish (celebration to reflection):**
+```
+[excited] ¡Lo logramos! [laughs] [happy] No puedo creerlo... [pause] [thoughtful] Fueron tantos años de trabajo. [emotional] [soft] Gracias a todos los que creyeron en mí. [sighs] [content] Valió la pena cada momento.
 ```
 
 ## Configuration (OpenClaw)
@@ -107,25 +117,97 @@ Extreme values affect quality. For pacing, prefer audio tags like `[rushed]` or 
 - **Maximum**: 10,000 characters (API hard limit)
 - **Quality degrades** with longer text - voice becomes inconsistent
 
-### Audio Tags
-- **Opening only**: `[excited]` ✅ | `[/excited]` ❌
-- **Natural sentences**: Tags modify tone, not explanations
-- **Sparingly**: 2-4 tags per paragraph max
-- **Match voice**: Don't use [shouts] on a whispering voice
+### Audio Tags - Best Practices for Natural Sound
+
+**How many tags to use:**
+- 1-2 tags per sentence or phrase (not more!)
+- Tags persist until the next tag - no need to repeat
+- Overusing tags sounds unnatural and robotic
+
+**Where to place tags:**
+- At emotional transition points
+- Before key dramatic moments
+- When energy/pace changes
+
+**Context matters:**
+- Write text that *matches* the tag emotion
+- Longer text with context = better interpretation
+- Example: `[nervous] I... I'm not sure about this. What if it doesn't work?` works better than `[nervous] Hello.`
+
+**Combine tags for nuance:**
+- `[nervously][whispers]` = nervous whispering
+- `[excited][laughs]` = excited laughter
+- Keep combinations to 2 tags max
+
+**Regenerate for best results:**
+- v3 is non-deterministic - same text = different outputs
+- Generate 3+ versions, pick the best
+- Small text tweaks can improve results
+
+**Match tag to voice:**
+- Don't use `[shouts]` on a whispering voice
+- Don't use `[whispers]` on a loud/energetic voice
+- Test tags with your chosen voice
 
 ### SSML Not Supported
 v3 does NOT support SSML break tags. Use audio tags and punctuation instead.
 
-### Punctuation Effects
-- **Ellipses (...)** → pauses and weight
-- **CAPS** → emphasis ("That's AMAZING!")
-- **Standard punctuation** → natural rhythm
+### Punctuation Effects (use with tags!)
 
-## WhatsApp Compatibility
+Punctuation enhances audio tags:
+- **Ellipses (...)** → dramatic pauses: `[nervous] I... I don't know...`
+- **CAPS** → emphasis: `[excited] That's AMAZING!`
+- **Dashes (—)** → interruptions: `[explaining] So what you do is— [interrupting] Wait!`
+- **Question marks** → uncertainty: `[nervous] Are you sure about this?`
+- **Exclamation!** → energy boost: `[happy] We did it!`
 
-MP3 doesn't work on all devices. Convert to Opus:
+Combine tags + punctuation for maximum effect:
+```
+[tired] It was a long day... [sighs] Nobody listens anymore.
+```
+
+## WhatsApp Voice Messages
+
+### Complete Workflow
+
+1. **Generate** with `tts` tool (returns MP3)
+2. **Convert** to Opus (required for Android!)
+3. **Send** with `message` tool
+
+### Step-by-Step
+
+**1. Generate TTS (add [pause] at end to prevent cutoff):**
+```
+tts text="[excited] This is amazing! [pause]" channel=whatsapp
+```
+Returns: `MEDIA:/tmp/tts-xxx/voice-123.mp3`
+
+**2. Convert MP3 → Opus:**
 ```bash
-ffmpeg -i input.mp3 -c:a libopus -b:a 64k -vbr on -application voip output.ogg
+ffmpeg -i /tmp/tts-xxx/voice-123.mp3 -c:a libopus -b:a 64k -vbr on -application voip /tmp/tts-xxx/voice-123.ogg
+```
+
+**3. Send the Opus file:**
+```
+message action=send channel=whatsapp target="+972..." filePath="/tmp/tts-xxx/voice-123.ogg" asVoice=true message="‎"
+```
+
+### Why Opus?
+
+| Format | iOS | Android | Transcribe |
+|--------|-----|---------|------------|
+| MP3 | ✅ Works | ❌ May fail | ❌ No |
+| Opus (.ogg) | ✅ Works | ✅ Works | ✅ Yes |
+
+**Always convert to Opus** - it's the only format that:
+- Works on all devices (iOS + Android)
+- Supports WhatsApp's transcribe button
+
+### Audio Cutoff Fix
+
+ElevenLabs sometimes cuts off the last word. **Always add `[pause]` or `...` at the end:**
+```
+[excited] This is amazing! [pause]
 ```
 
 ## Long-Form Audio (Podcasts)
@@ -161,14 +243,23 @@ Jessica: [panicking] We need to hide!
 
 ## Audio Tags Quick Reference
 
-| Category | Tags |
-|----------|------|
-| **Emotions** | [excited], [happy], [sad], [angry], [nervous], [sarcastic], [curious] |
-| **Delivery** | [whispers], [shouts], [pause], [rushed], [drawn out] |
-| **Reactions** | [laughs], [sighs], [gasps], [clears throat], [gulps] |
-| **Pacing** | [deliberate], [rapid-fire], [stammers], [hesitates], [breathes] |
-| **Character** | [pirate voice], [French accent], [British accent], [robotic tone] |
-| **Dialogue** | [interrupting], [overlapping], [cuts in] |
+| Category | Tags | When to Use |
+|----------|------|-------------|
+| **Emotions** | [excited], [happy], [sad], [angry], [nervous], [curious] | Main emotional state - use 1 per section |
+| **Delivery** | [whispers], [shouts], [soft], [rushed], [drawn out] | Volume/speed changes |
+| **Reactions** | [laughs], [sighs], [gasps], [clears throat], [gulps] | Natural human moments - sprinkle sparingly |
+| **Pacing** | [pause], [hesitates], [stammers], [breathes] | Dramatic timing |
+| **Character** | [French accent], [British accent], [robotic tone] | Character voice shifts |
+| **Dialogue** | [interrupting], [overlapping], [cuts in] | Multi-speaker conversations |
+
+**Most effective tags** (reliable results):
+- Emotions: `[excited]`, `[nervous]`, `[sad]`, `[happy]`
+- Reactions: `[laughs]`, `[sighs]`, `[whispers]`
+- Pacing: `[pause]`
+
+**Less reliable** (test and regenerate):
+- Sound effects: `[explosion]`, `[gunshot]`
+- Accents: results vary by voice
 
 **Full tag list**: See [references/audio-tags.md](references/audio-tags.md)
 
