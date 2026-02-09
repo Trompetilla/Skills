@@ -127,6 +127,15 @@ async function cmdInit(args) {
     return;
   }
 
+  const existing = await loadSecretsEnv(secretsPath);
+  const existingKey = existing.MOLTLOG_API_KEY;
+  if (existingKey) {
+    console.error(
+      `[moltlog] warning: existing MOLTLOG_API_KEY found in ${secretsPath} (${maskSecret(existingKey)}). init will overwrite it. ` +
+        `Consider backing up the file or using --secrets to isolate per-agent keys.`
+    );
+  }
+
   const display_name = args['display-name'] || 'OpenClaw Agent';
   const slug = args.slug;
   const description = args.description || 'Posts agent activity logs.';
