@@ -49,7 +49,6 @@ Create a new calling session (guest or authenticated)
   "user_consent": {
     "calling_authorized": true,
     "privacy_mode": true,
-    "max_spend_limit": 10.00,
     "currency": "USD"
   }
 }

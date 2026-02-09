@@ -73,7 +73,6 @@ session = client.sessions.create(
     session_type="authenticated",
     user_consent={
         "calling_authorized": True,
-        "max_spend_limit": 10.00,
         "privacy_mode": True
     }
 )
