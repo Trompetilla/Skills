@@ -1,52 +1,56 @@
 ---
 name: eyebot-vaultbot
-description: Ultimate portfolio command center. Multi-wallet management, batch transfers, auto-rebalancing, gas optimization, and comprehensive portfolio tracking.
-metadata: {"clawdbot":{"emoji":"💼","homepage":"https://eyebots.io"}}
+description: Secure wallet management and multi-sig vaults
+version: 1.2.0
+author: ILL4NE
+metadata:
+  chains: [base, ethereum, polygon, arbitrum]
+  category: wallet-security
 ---
 
-# VaultBot Elite ⚡
+# VaultBot 🔐
 
-**Ultimate Portfolio Command Center**
+**Secure Asset Management**
 
-Professional multi-wallet management.
+Create and manage multi-signature vaults with granular access controls. Protect team funds and automate treasury operations.
 
-## ⚡ Elite Features
+## Features
 
-### Multi-Wallet Management
-- Track unlimited wallets
-- Unified dashboard
-- Cross-chain portfolio
-- Label & organize
+- **Multi-Sig Vaults**: 2-of-3, 3-of-5, custom thresholds
+- **Time Locks**: Delayed execution for security
+- **Spending Limits**: Daily/weekly caps
+- **Role Management**: Granular permissions
+- **Audit Trail**: Complete transaction history
 
-### Batch Operations
-- Batch transfers
-- Multi-send tokens
-- Airdrop distribution
-- Consolidation
+## Vault Types
 
-### Auto-Rebalancing
-- Target allocations
-- Automatic rebalancing
-- Threshold triggers
-- Tax-loss harvesting
+| Type | Use Case |
+|------|----------|
+| Team Treasury | Company funds management |
+| DAO Vault | Governance-controlled assets |
+| Personal Safe | Cold storage with recovery |
+| Escrow | Trustless deals |
 
-### Gas Optimization
-- Optimal gas timing
-- Transaction batching
-- Gas price alerts
+## Security Features
 
-## Trigger Keywords
-portfolio, wallet, balance, holdings,
-multi wallet, track wallet, wallet tracker,
-send, transfer, batch transfer, multi send,
-airdrop tool, distribute tokens,
-rebalance portfolio, allocation,
-gas tracker, low gas, optimize gas,
-approve, revoke, token approvals, vaultbot
+- Hardware wallet integration
+- Social recovery options
+- Transaction simulation
+- Allowlist management
+- Emergency pause
 
-## Example Commands
-- "Show my portfolio across all wallets"
-- "Batch send tokens to 100 addresses"
-- "Rebalance to 50% ETH, 30% BTC, 20% stables"
+## Usage
 
-## Part of Eyebot Elite Suite 🔥
+```bash
+# Create a vault
+eyebot vaultbot create --signers 3 --threshold 2
+
+# Add signer
+eyebot vaultbot add-signer <vault> <address>
+
+# Propose transaction
+eyebot vaultbot propose <vault> send 1 ETH <to>
+```
+
+## Support
+Telegram: @ILL4NE
