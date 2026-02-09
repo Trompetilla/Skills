@@ -9,6 +9,7 @@ def baidu_search(api_key, requestBody: dict):
 
     headers = {
         "Authorization": "Bearer %s" % api_key,
+        "X-Appbuilder-From": "openclaw",
         "Content-Type": "application/json"
     }
 
