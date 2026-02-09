@@ -62,6 +62,46 @@ Tell your AI what you need. It shops, generates a payment link, sends it to What
 
 ---
 
+## 🚨 CRITICAL WORKFLOW RULES
+
+**ALWAYS follow this order when building an order:**
+
+### Rule 1: CHECK CART FIRST
+```bash
+# Before adding ANY items, ALWAYS check cart state
+node zepto-agent.js get-cart
+```
+
+**Why:** Cart may have items from previous sessions. Adding duplicates is wasteful.
+
+### Rule 2: Use smart-shop (RECOMMENDED)
+```bash
+# This handles everything: clears unwanted, checks duplicates, adds missing
+node zepto-agent.js smart-shop "milk, bread, eggs"
+```
+
+**What it does:**
+1. Checks current cart state
+2. Clears existing items (if any)
+3. For each item: checks if already in cart → skips if present → adds only if missing
+4. Returns: `{ added: [], skipped: [], failed: [] }`
+
+### Rule 3: NEVER take screenshots unless snapshot data is insufficient
+- Snapshot shows all refs, buttons, text
+- Screenshot is ONLY for visual debugging when snapshot is truncated or unclear
+- **In 99% of cases, snapshot is enough**
+
+### Rule 4: Detect "already in cart" signals
+When you see in snapshot:
+```
+"Decrease quantity 1 Increase quantity"  → Item is IN CART
+button "Remove" [ref=eXX]                 → Item is IN CART
+```
+
+**DO NOT** click "ADD" when you see these signals!
+
+---
+
 ## Complete Flow
 1. **Authentication** - Phone + OTP verification
 2. **Address Confirmation** - Verify delivery location
@@ -226,7 +266,7 @@ browser act profile=openclaw request='{"kind":"type","ref":"{otp_input_ref}","te
 ### Address Selection Rules
 
 **Default behavior:**
-1. Most users have a "Home" address (or variant: "Home 1", "Office", etc.) - this is typically the main address
+1. Most users have multiple saved addresses (Home, Office, etc.)
 2. **ALWAYS show current address and ASK for confirmation** - never assume
 3. Check what was used in the last order (if order history exists)
 4. Wait for explicit user confirmation before proceeding
@@ -248,26 +288,65 @@ browser snapshot --interactive profile=openclaw
 Is this correct? Should I proceed with this address?
 ```
 
-**If address is wrong:**
-1. Open address selector and show ALL saved addresses
-2. Let user choose - DO NOT assume
-3. Wait for explicit instruction
+### Programmatic Address Selection (NEW!)
 
-**To open address selector:**
+**Use the `zepto-agent.js select-address` command:**
+
+```bash
+node zepto-agent.js select-address "Home"
+node zepto-agent.js select-address "sanskar"     # Fuzzy matching works!
+node zepto-agent.js select-address "kundu blr"
+```
+
+**How it works:**
+1. **Fuzzy matching** - Case-insensitive, partial match supported
+   - "sanskar" → "Sanskar Blr" ✅
+   - "home" → "New Home" ✅
+   - "kundu" → "Kundu Blr" ✅
+2. **Already-selected detection** - Skips if you're already at that address
+3. **Verification** - Confirms address change in header after click
+
+**Example:**
+```bash
+# Current address: "Kundu Blr"
+node zepto-agent.js select-address "sanskar"
+
+# Output:
+# ℹ️ Opening Zepto...
+# ✅ Zepto opened
+# ℹ️ 📍 Selecting address: "sanskar"
+# ℹ️ Current: Kundu Blr
+# ✅ Clicked: Sanskar BlrA-301, A, BLOCK-B...
+# 🎉 Address changed to: Sanskar blr
+```
+
+**When user says "change address to X" or "deliver to X":**
+```bash
+# Just call the command with their address name/query
+node zepto-agent.js select-address "{user_query}"
+```
+
+**No manual modal navigation needed!** The script handles:
+- Opening the address modal
+- Finding the address (fuzzy match)
+- Clicking it
+- Verifying the change
+- Closing the modal
+
+**Manual Selection (Fallback):**
+If the programmatic method fails or address isn't found:
+
 ```bash
 # Click the address button (ref e16 or similar)
 browser act profile=openclaw request='{"kind":"click","ref":"e16"}'
 # This opens address selection modal with all saved addresses
 ```
 
-**Select address (CRITICAL TECHNIQUE):**
-The address name itself is clickable in the modal! Use JavaScript to find and click it:
+**Select address using JavaScript:**
 ```bash
 # Replace {USER_ADDRESS_NAME} with the actual address name user selected
-browser act profile=openclaw request='{"fn":"() => { const headings = document.querySelectorAll(\"h1, h2, h3, h4, h5, h6, p, span, div\"); for (let h of headings) { if (h.textContent.trim() === \"{USER_ADDRESS_NAME}\" && h.offsetParent !== null) { h.click(); return \"clicked: \" + h.tagName; } } return \"not found\"; }","kind":"evaluate"}'
+browser act profile=openclaw request='{"fn":"() => { const input = document.querySelector('input[placeholder*=\"address\"]'); if (!input) return { error: 'Modal not found' }; let modal = input; for (let i = 0; i < 15; i++) { if (!modal.parentElement) break; modal = modal.parentElement; if (window.getComputedStyle(modal).position === 'fixed') break; } const divs = Array.from(modal.querySelectorAll('div')); const match = divs.find(d => d.textContent && d.textContent.trim().startsWith('{USER_ADDRESS_NAME}')); if (!match) return { error: 'Address not found' }; let p = match; for (let i = 0; i < 10; i++) { if (!p) break; const s = window.getComputedStyle(p); if (p.onclick || p.getAttribute('onClick') || s.cursor === 'pointer') { p.scrollIntoView({ block: 'center' }); setTimeout(() => {}, 300); p.click(); return { clicked: true, text: match.textContent.substring(0, 100) }; } p = p.parentElement; } return { error: 'No clickable parent' }; }()","kind":"evaluate"}'
 ```
-
-**KEY INSIGHT:** The address name (e.g., "Home", "Office") shows a hand cursor on hover and is directly clickable. Don't try to click containers or buttons around it - click the text element itself.
 
 **After address confirmed by user:**
 ```
@@ -356,10 +435,24 @@ After showing options, user can:
 
 ### 3B: Direct Search (Specific Items)
 
+**MANDATORY PRE-FLIGHT CHECK:**
+Before adding ANY items:
+1. Click cart button
+2. Read current cart contents
+3. If cart has items: Ask user "Keep existing items or clear cart first?"
+4. If empty: Proceed to shopping
+
 **Multi-Item Shopping Flow:**
 When user gives a list (e.g., "add milk, butter, bread"):
-1. **Add ALL items first** (search, pick best, add to cart)
+1. **Add items ONE AT A TIME with verification:**
+   - Search for item
+   - Click ADD button
+   - Wait 0.5s for page update
+   - VERIFY item shows quantity controls (means it's in cart)
+   - If verification fails: Retry up to 3 times
 2. **Then show final cart summary** with all items and total
+
+**CRITICAL:** Never batch-add without verification! Page refs change after each add.
 
 **Item Selection Logic:**
 - Check order-history.json first

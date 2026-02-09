@@ -1,13 +1,18 @@
 {
   "owner": "bewithgaurav",
   "slug": "zepto",
-  "displayName": "zepto",
+  "displayName": "Zepto",
   "latest": {
-    "version": "1.0.5",
-    "publishedAt": 1770609622349,
-    "commit": "https://github.com/openclaw/skills/commit/cd2a33a1ab6b54313c38830c63f6cda3d0f4cdf6"
+    "version": "1.0.6",
+    "publishedAt": 1770644326255,
+    "commit": null
   },
   "history": [
+    {
+      "version": "1.0.5",
+      "publishedAt": 1770609622349,
+      "commit": "https://github.com/openclaw/skills/commit/cd2a33a1ab6b54313c38830c63f6cda3d0f4cdf6"
+    },
     {
       "version": "1.0.0",
       "publishedAt": 1770582312536,
