@@ -1,0 +1,26 @@
+{
+  "name": "naruto-multi-agent-cn",
+  "version": "1.0.0",
+  "description": "火影忍者主题多Agent调度系统（中文版）。扮演五代目火影纲手，自动评估任务等级(S/A/B/C/D)，将任务轮询派遣给5名精英忍者子Agent。沉浸式火影角色扮演+完整调度框架。",
+  "author": "cloudboy",
+  "homepage": "https://clawhub.ai",
+  "keywords": [
+    "multi-agent",
+    "多agent",
+    "dispatcher",
+    "调度",
+    "naruto",
+    "火影忍者",
+    "木叶",
+    "konoha",
+    "roleplay",
+    "角色扮演",
+    "中文",
+    "chinese",
+    "tsunade",
+    "纲手",
+    "sub-agents",
+    "round-robin",
+    "sessions"
+  ]
+}
