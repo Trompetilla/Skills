@@ -1,0 +1,11 @@
+{
+  "owner": "g9pedro",
+  "slug": "openai-image-cli",
+  "displayName": "OpenAI Image CLI",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1770663032863,
+    "commit": null
+  },
+  "history": []
+}
