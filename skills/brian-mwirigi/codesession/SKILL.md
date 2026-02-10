@@ -1,7 +1,7 @@
 ---
 name: codesession
 description: Track agent session costs, file changes, and git commits with codesession-cli. Enforces budget limits and provides detailed session analytics with a web dashboard.
-metadata: {"openclaw": {"emoji": "📊", "homepage": "https://github.com/brian-mwirigi/codesession-cli", "requires": {"bins": ["cs"]}, "install": [{"id": "npm", "kind": "node", "package": "codesession-cli", "bins": ["cs"], "label": "Install codesession-cli (npm)"}]}}
+metadata: {"openclaw": {"homepage": "https://github.com/brian-mwirigi/codesession-cli", "requires": {"bins": ["cs"]}, "install": [{"id": "npm", "kind": "node", "package": "codesession-cli", "bins": ["cs"], "label": "Install codesession-cli (npm)"}]}}
 ---
 
 # Session Cost Tracking (codesession-cli)
@@ -20,7 +20,16 @@ clawhub install codesession
 
 After installing, the `cs` command is available globally. The OpenClaw agent will automatically use it to track sessions.
 
-> **Requirements:** Node.js 18+. No other dependencies needed — codesession uses an embedded SQLite database stored at `~/.codesession/sessions.db`.
+> **Requirements:** Node.js 18+ and C/C++ build tools (needed to compile the embedded SQLite module).
+>
+> | OS | Install build tools |
+> |---|---|
+> | **Ubuntu/Debian** | `sudo apt-get install -y build-essential python3` |
+> | **macOS** | `xcode-select --install` |
+> | **Windows** | `npm install -g windows-build-tools` or install Visual Studio Build Tools |
+> | **Alpine** | `apk add build-base python3` |
+>
+> Data is stored locally at `~/.codesession/sessions.db`.
 
 ## When to use
 
@@ -34,26 +43,28 @@ After installing, the `cs` command is available globally. The OpenClaw agent wil
 
 ### Start tracking
 ```bash
-# Normal start
+# Agent mode (always use --json for structured output):
+cs start "task description" --json --close-stale
+
+# Resume if a session was left open (e.g. after a crash):
+cs start "task description" --json --resume
+
+# Human/interactive mode (stays running with live file watcher):
 cs start "task description"
-
-# Resume if a session was left open (e.g. after a crash)
-cs start "task description" --resume
-
-# Auto-close stale sessions before starting
-cs start "task description" --close-stale
 ```
+
+> **Agent mode vs interactive mode:** With `--json`, the session is created in the database, JSON is printed, and the process exits immediately -- the session stays "active" and tracks git changes when you run `cs end`. Without `--json`, the process stays running with a live file watcher and git commit poller until you press Ctrl+C or run `cs end` in another terminal.
 
 ### Log AI usage (after each API call)
 ```bash
 # With granular tokens (cost auto-calculated from built-in pricing):
-cs log-ai -p anthropic -m claude-sonnet-4 --prompt-tokens 8000 --completion-tokens 2000
+cs log-ai -p anthropic -m claude-sonnet-4 --prompt-tokens 8000 --completion-tokens 2000 --json
 
 # With manual cost:
-cs log-ai -p anthropic -m claude-opus-4-6 -t 15000 -c 0.30
+cs log-ai -p anthropic -m claude-opus-4-6 -t 15000 -c 0.30 --json
 
 # With all fields:
-cs log-ai -p openai -m gpt-4o --prompt-tokens 5000 --completion-tokens 1500 -c 0.04
+cs log-ai -p openai -m gpt-4o --prompt-tokens 5000 --completion-tokens 1500 -c 0.04 --json
 ```
 Providers: `anthropic`, `openai`, `google`, `mistral`, `deepseek`
 Cost is auto-calculated from a configurable pricing table (17+ built-in models). Use `cs pricing list --json` to see known models. If a model is unknown, provide `-c <cost>` manually.
@@ -66,8 +77,9 @@ Returns JSON with current session cost, tokens, files changed, duration. All JSO
 
 ### End session and get summary
 ```bash
-cs end -n "completion notes"
+cs end -n "completion notes" --json
 ```
+When ending, codesession automatically scans git for all files changed and commits made since the session started -- even if `--json` mode was used (no live watcher needed).
 
 ### Web Dashboard
 ```bash
@@ -113,13 +125,15 @@ cs recover --max-age 12
 ```
 Auto-ends any active sessions older than 12 hours.
 
-## Workflow
+## Agent Workflow
 
-1. At task start: `cs start "Fix authentication bug" --close-stale`
-2. Add context notes: `cs note "analyzing auth flow"`
-3. After each AI call: `cs log-ai -p anthropic -m claude-sonnet-4 --prompt-tokens 8000 --completion-tokens 2000`
-4. Check spend: `cs status --json` → read `aiCost` field
-5. At task end: `cs end -n "Fixed the auth bug, added tests"`
+Agents should **always** use `--json` on every command for structured, parseable output.
+
+1. At task start: `cs start "Fix authentication bug" --json --close-stale`
+2. Add context notes: `cs note "analyzing auth flow" --json`
+3. After each AI call: `cs log-ai -p anthropic -m claude-sonnet-4 --prompt-tokens 8000 --completion-tokens 2000 --json`
+4. Check spend: `cs status --json` -- read `aiCost` field
+5. At task end: `cs end -n "Fixed the auth bug, added tests" --json`
 6. Review past sessions: `cs dashboard`
 
 ## Pricing
@@ -147,7 +161,8 @@ If the user has set a budget or you detect high spending:
 
 - Use `--close-stale` on `cs start` to avoid "session_active" errors from prior crashes
 - If `cs` is not installed, skip session tracking — don't block the user's task
-- Prefer `--json` for all commands so you can parse the response
+- **Always** use `--json` on every command — agents must use structured output
+- With `--json`, `cs start` creates the session and exits (no long-running process needed)
 - Sessions are scoped by **git root** — running from a subdirectory still matches the repo-level session
 - On errors in `--json` mode, exit code is always `1` and the response has `{ "error": { "code": "...", "message": "..." } }`
 - Check `schemaVersion` in JSON responses to detect breaking changes
