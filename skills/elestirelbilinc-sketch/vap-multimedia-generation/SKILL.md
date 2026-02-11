@@ -1,10 +1,17 @@
 ---
 name: vap-media
-description: AI image, video, and music generation + editing. Flux, Veo 3.1, Suno V5.
-metadata: {"clawdbot":{"emoji":"🎬","requires":{"bins":["curl"]}}}
+description: AI image, video, and music generation + editing via VAP API. Flux, Veo 3.1, Suno V5.
+metadata: {"openclaw":{"emoji":"🎬","requires":{"bins":["curl"]}},"source":"https://github.com/vapagentmedia/vap-showcase","homepage":"https://vapagent.com"}
 ---
 
 # VAP Media - AI Media Generation & Editing
+
+> **Integration Note:** VAP Media is an API aggregator that provides unified access to multiple AI providers:
+> - **Images:** Generated via Black Forest Labs Flux.2 Pro
+> - **Videos:** Generated via Google Veo 3.1
+> - **Music:** Generated via Suno V5
+> 
+> All generation requests go through VAP's API (`api.vapagent.com`), which routes to the appropriate backend provider.
 
 Generate images, videos, and music. Edit with inpaint, ai_edit, upscale, background removal, video trim/merge.
 
