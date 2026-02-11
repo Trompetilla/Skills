@@ -8,6 +8,11 @@ description: |
 metadata:
   author: maton
   version: "1.0"
+  clawdbot:
+    emoji: 🧠
+    requires:
+      env:
+        - MATON_API_KEY
 ---
 
 # Tally
@@ -714,9 +719,7 @@ print(f"Total submissions: {submissions['totalNumberOfSubmissionsPerFilter']['al
 | 429 | Rate limited (100 req/min) |
 | 4xx/5xx | Passthrough error from Tally API |
 
-### Troubleshooting: Invalid API Key
-
-**When you receive an "Invalid API key" error, ALWAYS follow these steps before concluding there is an issue:**
+### Troubleshooting: API Key Issues
 
 1. Check that the `MATON_API_KEY` environment variable is set:
 
@@ -735,8 +738,17 @@ print(json.dumps(json.load(urllib.request.urlopen(req)), indent=2))
 EOF
 ```
 
+### Troubleshooting: Invalid App Name
+
+1. Ensure your URL path starts with `tally`. For example:
+
+- Correct: `https://gateway.maton.ai/tally/forms`
+- Incorrect: `https://gateway.maton.ai/forms`
+
 ## Resources
 
 - [Tally API Introduction](https://developers.tally.so/api-reference/introduction)
 - [Tally API Reference](https://developers.tally.so/llms.txt)
 - [Tally Help Center](https://help.tally.so/)
+- [Maton Community](https://discord.com/invite/dBfFAcefs2)
+- [Maton Support](mailto:support@maton.ai)
