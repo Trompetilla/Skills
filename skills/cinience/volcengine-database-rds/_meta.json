@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "volcengine-database-rds",
+  "displayName": "Volcengine Database Rds",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1770769469034,
+    "commit": null
+  },
+  "history": []
+}
