@@ -8,6 +8,7 @@ metadata:
   version: "1.0"
   clawdbot:
     emoji: 🧠
+    homepage: "https://maton.ai"
     requires:
       env:
         - MATON_API_KEY
@@ -181,6 +182,7 @@ If omitted, the gateway uses the default (oldest) active connection for that app
 | Asana | `asana` | `app.asana.com` |
 | Attio | `attio` | `api.attio.com` |
 | Basecamp | `basecamp` | `3.basecampapi.com` |
+| beehiiv | `beehiiv` | `api.beehiiv.com` |
 | Box | `box` | `api.box.com` |
 | Brevo | `brevo` | `api.brevo.com` |
 | Calendly | `calendly` | `api.calendly.com` |
@@ -194,6 +196,7 @@ If omitted, the gateway uses the default (oldest) active connection for that app
 | Dropbox | `dropbox` | `api.dropboxapi.com` |
 | Eventbrite | `eventbrite` | `www.eventbriteapi.com` |
 | Fathom | `fathom` | `api.fathom.ai` |
+| Fireflies | `fireflies` | `api.fireflies.ai` |
 | GitHub | `github` | `api.github.com` |
 | Gumroad | `gumroad` | `api.gumroad.com` |
 | Google Ads | `google-ads` | `googleads.googleapis.com` |
@@ -270,6 +273,7 @@ See [references/](references/) for detailed routing guides per provider:
 - [Asana](references/asana.md) - Tasks, projects, workspaces, webhooks
 - [Attio](references/attio.md) - People, companies, records, tasks
 - [Basecamp](references/basecamp.md) - Projects, to-dos, messages, schedules, documents
+- [beehiiv](references/beehiiv.md) - Publications, subscriptions, posts, custom fields
 - [Box](references/box.md) - Files, folders, collaborations, shared links
 - [Brevo](references/brevo.md) - Contacts, email campaigns, transactional emails, templates
 - [Calendly](references/calendly.md) - Event types, scheduled events, availability, webhooks
@@ -283,6 +287,7 @@ See [references/](references/) for detailed routing guides per provider:
 - [Dropbox](references/dropbox.md) - Files, folders, search, metadata, revisions, tags
 - [Eventbrite](references/eventbrite.md) - Events, venues, tickets, orders, attendees
 - [Fathom](references/fathom.md) - Meeting recordings, transcripts, summaries, webhooks
+- [Fireflies](references/fireflies.md) - Meeting transcripts, summaries, AskFred AI, channels
 - [GitHub](references/github.md) - Repositories, issues, pull requests, commits
 - [Gumroad](references/gumroad.md) - Products, sales, subscribers, licenses, webhooks
 - [Google Ads](references/google-ads.md) - Campaigns, ad groups, GAQL queries
@@ -325,6 +330,7 @@ See [references/](references/) for detailed routing guides per provider:
 - [Quo](references/quo.md) - Calls, messages, contacts, conversations, webhooks
 - [Salesforce](references/salesforce.md) - SOQL, sObjects, CRUD
 - [SignNow](references/signnow.md) - Documents, templates, invites, e-signatures
+- [SendGrid](references/sendgrid.md) - Email sending, contacts, templates, suppressions, statistics
 - [Slack](references/slack.md) - Messages, channels, users
 - [Square](references/squareup.md) - Payments, customers, orders, catalog, inventory, invoices
 - [Stripe](references/stripe.md) - Customers, subscriptions, payments
