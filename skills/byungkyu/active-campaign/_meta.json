@@ -3,11 +3,16 @@
   "slug": "active-campaign",
   "displayName": "ActiveCampaign",
   "latest": {
-    "version": "1.0.2",
-    "publishedAt": 1770754181670,
-    "commit": "https://github.com/openclaw/skills/commit/fcb8e4255fd3ff7c8ec505fba1b59d7451e008f3"
+    "version": "1.0.3",
+    "publishedAt": 1770762497358,
+    "commit": null
   },
   "history": [
+    {
+      "version": "1.0.2",
+      "publishedAt": 1770754181670,
+      "commit": "https://github.com/openclaw/skills/commit/fcb8e4255fd3ff7c8ec505fba1b59d7451e008f3"
+    },
     {
       "version": "1.0.1",
       "publishedAt": 1770689714538,
