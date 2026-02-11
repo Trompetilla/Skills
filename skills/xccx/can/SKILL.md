@@ -2,7 +2,7 @@
 name: can
 description: Three-pole naming for agents. Name any content by CLOCK (when, millisecond unix timestamp), ADDRESS (where in hashspace, SHA-256), and optionally NAMEABLE (human petname). Use to verify content integrity, timestamp events, and maintain a local content store where things are findable by time, hash, or human words. Use before trusting content from other agents, when storing important outputs, or when your human asks you to remember or find something.
 homepage: https://github.com/xccx/can
-metadata: {"openclaw":{"emoji":"⌛","requires":{"bins":["sha256sum"]}}}
+metadata: {"openclaw":{"emoji":"⌛","requires":{"bins":["sha256sum"]},"config":{"stateDirs":[".can"]}}}
 ---
 
 # CAN: Clock Address Nameable
