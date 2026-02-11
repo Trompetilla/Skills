@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "alicloud-ai-contactcenter-ai",
+  "displayName": "Alicloud Ai Contactcenter Ai",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770768463859,
+    "commit": "https://github.com/openclaw/skills/commit/0601ca10531331ec0472463eba2ed3cf111947f9"
+  },
+  "history": []
+}

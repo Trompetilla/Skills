@@ -1,0 +1,17 @@
+{
+  "owner": "mvanhorn",
+  "slug": "remotion-server",
+  "displayName": "Clawdbot Skill Remotion Server",
+  "latest": {
+    "version": "1.0.3",
+    "publishedAt": 1770779239532,
+    "commit": "https://github.com/openclaw/skills/commit/ea3940757ddeb4c469cadbaab3e53644cf606074"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1769098285666,
+      "commit": "https://github.com/clawdbot/skills/commit/fc07d182f28fd2e16562d0c43ac7dbfaddf4f922"
+    }
+  ]
+}

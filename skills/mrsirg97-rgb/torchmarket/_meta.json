@@ -1,0 +1,47 @@
+{
+  "owner": "mrsirg97-rgb",
+  "slug": "torchmarket",
+  "displayName": "Torch Market",
+  "latest": {
+    "version": "4.0.3",
+    "publishedAt": 1770770404914,
+    "commit": "https://github.com/openclaw/skills/commit/cfcc1975b38a5f14213201963d76f4db6bdf49c4"
+  },
+  "history": [
+    {
+      "version": "3.0.9",
+      "publishedAt": 1770693807129,
+      "commit": "https://github.com/openclaw/skills/commit/9deefd81f783794c4d4802a2684f1778204a9e84"
+    },
+    {
+      "version": "3.0.5",
+      "publishedAt": 1770594931538,
+      "commit": "https://github.com/openclaw/skills/commit/28f76c59b57def49fe80050446e661705f9db9e5"
+    },
+    {
+      "version": "2.0.5",
+      "publishedAt": 1770516117920,
+      "commit": "https://github.com/openclaw/skills/commit/a6056a5113ff59d769ed55fa2026e119210576cf"
+    },
+    {
+      "version": "1.4.1",
+      "publishedAt": 1770428799856,
+      "commit": "https://github.com/openclaw/skills/commit/4221e46889344e42842d2b240f5f90ded9b71713"
+    },
+    {
+      "version": "1.4.0",
+      "publishedAt": 1770334535051,
+      "commit": "https://github.com/openclaw/skills/commit/0673d80f09d8c4de7d2d2cded537233c05823dd9"
+    },
+    {
+      "version": "1.1.0",
+      "publishedAt": 1770328986120,
+      "commit": "https://github.com/clawdbot/skills/commit/3f37d55e4f553b714979f1a120f3e8c11b8b0c64"
+    },
+    {
+      "version": "1.0.0",
+      "publishedAt": 1770248760451,
+      "commit": "https://github.com/clawdbot/skills/commit/467de7e9685b12521d0c2ea8c8fbbd907c7fcdb9"
+    }
+  ]
+}

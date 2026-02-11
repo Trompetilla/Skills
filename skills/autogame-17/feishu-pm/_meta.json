@@ -1,0 +1,17 @@
+{
+  "owner": "autogame-17",
+  "slug": "feishu-pm",
+  "displayName": "Feishu Pm",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770791732434,
+    "commit": "https://github.com/openclaw/skills/commit/fce31e31d3a796855e95b94f751e36209fdef321"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1770648903319,
+      "commit": "https://github.com/openclaw/skills/commit/b1d7fbe340e1c3f0cf86f88e3d5e1c2ba6096077"
+    }
+  ]
+}

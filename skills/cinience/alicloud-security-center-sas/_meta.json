@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "alicloud-security-center-sas",
+  "displayName": "Alicloud Security Center Sas",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770768584044,
+    "commit": "https://github.com/openclaw/skills/commit/5da28a3376932b0c182755d2b8c6b87e1bb31799"
+  },
+  "history": []
+}

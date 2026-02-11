@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "alicloud-ai-misc-crawl-and-skill",
+  "displayName": "Alicloud Ai Misc Crawl And Skill",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770768422774,
+    "commit": "https://github.com/openclaw/skills/commit/5c64860597d383c96ade66121ca1699f4bbc4fdc"
+  },
+  "history": []
+}

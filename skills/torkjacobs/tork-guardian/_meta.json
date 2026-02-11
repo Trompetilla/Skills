@@ -1,0 +1,11 @@
+{
+  "owner": "torkjacobs",
+  "slug": "tork-guardian",
+  "displayName": "Tork Guardian",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770765579037,
+    "commit": "https://github.com/openclaw/skills/commit/d2f5d98362cf1085d30a53fb7c2740ed514d9dba"
+  },
+  "history": []
+}

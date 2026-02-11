@@ -1,0 +1,22 @@
+{
+  "owner": "mrsirg97-rgb",
+  "slug": "torchliquidationbot",
+  "displayName": "Torch Liquidation Bot",
+  "latest": {
+    "version": "2.0.8",
+    "publishedAt": 1770772338780,
+    "commit": "https://github.com/openclaw/skills/commit/e7226ff05fc42209dda7ad6c2946f12cf2f82f92"
+  },
+  "history": [
+    {
+      "version": "1.0.5",
+      "publishedAt": 1770732244900,
+      "commit": "https://github.com/openclaw/skills/commit/c636d0a759eeb0a5cb7f3237ef3a284826a1c70d"
+    },
+    {
+      "version": "1.0.4",
+      "publishedAt": 1770608166575,
+      "commit": "https://github.com/openclaw/skills/commit/37cbc4b5918dc3729e572a81b66ef8b576869ddf"
+    }
+  ]
+}

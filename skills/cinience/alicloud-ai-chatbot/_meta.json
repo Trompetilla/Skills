@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "alicloud-ai-chatbot",
+  "displayName": "Alicloud Ai Chatbot",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770768456456,
+    "commit": "https://github.com/openclaw/skills/commit/bb10bc21265671e2a65aead8fbeb712c4760dc79"
+  },
+  "history": []
+}

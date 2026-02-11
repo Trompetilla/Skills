@@ -1,0 +1,11 @@
+{
+  "owner": "lhquangit",
+  "slug": "notebooklm-cli-cookies",
+  "displayName": "NotebookLM CLI Using Session Cookies",
+  "latest": {
+    "version": "0.1.1",
+    "publishedAt": 1770815310078,
+    "commit": "https://github.com/openclaw/skills/commit/1deb2d02b02948d871edde2a932ae12ea1f435d4"
+  },
+  "history": []
+}

@@ -1,0 +1,17 @@
+{
+  "owner": "aaron-he-zhu",
+  "slug": "keyword-research",
+  "displayName": "Keyword Research",
+  "latest": {
+    "version": "1.0.2",
+    "publishedAt": 1770739842583,
+    "commit": "https://github.com/openclaw/skills/commit/7d53d922bb856934be79bdc4fa91e3e8890c9e8d"
+  },
+  "history": [
+    {
+      "version": "1.0.1",
+      "publishedAt": 1770559674108,
+      "commit": "https://github.com/openclaw/skills/commit/ddad9120c401fdb1099a85b222e4c95f512217c1"
+    }
+  ]
+}
