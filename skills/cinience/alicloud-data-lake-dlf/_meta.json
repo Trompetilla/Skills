@@ -1,0 +1,11 @@
+{
+  "owner": "cinience",
+  "slug": "alicloud-data-lake-dlf",
+  "displayName": "Alicloud Data Lake Dlf",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1770768526642,
+    "commit": null
+  },
+  "history": []
+}
